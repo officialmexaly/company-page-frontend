@@ -11,7 +11,7 @@ const Hero = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
     }
     window.addEventListener('mousemove', handleMouseMove)
@@ -82,36 +82,53 @@ const Hero = () => {
         className="relative z-10 max-w-7xl mx-auto px-8 w-full"
         style={{ opacity }}
       >
-        <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[80vh]">
-          {/* Content Section */}
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left Column - Content */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-8"
+            className="text-center lg:text-left"
           >
-            {/* Premium Badge */}
-            <motion.div 
-              variants={itemVariants}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-full"
-            >
-              <Sparkles size={16} className="text-indigo-400" />
-              <span className="text-sm font-medium text-indigo-300">Next-Generation AI Platform</span>
+            {/* Badge */}
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-sm font-medium text-white/90 mb-8">
+              <Sparkles size={16} className="text-yellow-400" />
+              <span>Transforming Ideas into Reality</span>
             </motion.div>
 
             {/* Main Heading */}
-            <motion.div variants={itemVariants} className="space-y-6">
-              <h1 className="text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tight">
-                <span className="text-white">Elevate Your</span>
-                <br />
-                <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Enterprise Intelligence
-                </span>
-              </h1>
-              
-              <p className="text-xl text-white/75 max-w-2xl leading-relaxed font-light">
-                Harness the power of advanced AI to transform complex operations into seamless, intelligent workflows that drive unprecedented growth.
-              </p>
+            <motion.h1
+              variants={itemVariants}
+              className="text-5xl lg:text-7xl font-bold text-white leading-tight mb-6"
+            >
+              <span className="block">Welcome to</span>
+              <span className="block bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Mexaly
+              </span>
+            </motion.h1>
+
+            {/* Subheading */}
+            <motion.p
+              variants={itemVariants}
+              className="text-xl text-white/80 mb-8 max-w-2xl mx-auto lg:mx-0"
+            >
+              Experience the future of innovation with our cutting-edge solutions that empower businesses to reach new heights and transform their digital presence.
+            </motion.p>
+
+            {/* Features List */}
+            <motion.div variants={itemVariants} className="space-y-4 mb-8">
+              <div className="flex items-center gap-3 text-white/70">
+                <Brain size={20} className="text-indigo-400 flex-shrink-0" />
+                <span>AI-Powered Intelligence</span>
+              </div>
+              <div className="flex items-center gap-3 text-white/70">
+                <Zap size={20} className="text-purple-400 flex-shrink-0" />
+                <span>Lightning-Fast Performance</span>
+              </div>
+              <div className="flex items-center gap-3 text-white/70">
+                <Rocket size={20} className="text-pink-400 flex-shrink-0" />
+                <span>Scalable Solutions</span>
+              </div>
             </motion.div>
 
             {/* CTA Section */}
@@ -148,74 +165,66 @@ const Hero = () => {
               {/* Trust Indicators */}
               <motion.div 
                 variants={itemVariants}
-                className="flex items-center gap-8 text-white/65 text-sm font-medium"
+                className="flex items-center gap-8 pt-8 border-t border-white/10"
               >
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                  <span>Enterprise Ready</span>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">500+</div>
+                  <div className="text-sm text-white/60">Happy Clients</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                  <span>Deploy in Minutes</span>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">99.9%</div>
+                  <div className="text-sm text-white/60">Uptime</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                  <span>Zero Setup Cost</span>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">24/7</div>
+                  <div className="text-sm text-white/60">Support</div>
                 </div>
               </motion.div>
             </motion.div>
           </motion.div>
 
-          {/* Floating Illustration */}
-          <motion.div
+          {/* Right Column - Visual */}
+          <motion.div 
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="relative h-[600px] hidden lg:block"
+            className="relative"
           >
-            {/* Central AI Brain */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.8, type: "spring", stiffness: 100 }}
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl shadow-indigo-500/30"
-            >
-              <Brain size={48} className="text-white" />
-              <motion.div 
-                className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500/30 via-purple-500/30 to-pink-500/30"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </motion.div>
-
-            {/* Orbiting Elements */}
-            <motion.div
-              className="absolute inset-0"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            >
-              {/* Speed/Zap Orb */}
+            {/* Main Visual Container */}
+            <div className="relative w-full h-96 lg:h-[500px]">
+              {/* Central Hub */}
               <motion.div
-                className="absolute top-16 left-1/2 transform -translate-x-1/2 w-20 h-20 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/25"
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-2xl shadow-indigo-500/50"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 1, delay: 1 }}
+              >
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                  <Rocket size={32} className="text-indigo-500" />
+                </div>
+              </motion.div>
+
+              {/* Orbiting Elements */}
+              <motion.div
+                className="absolute top-1/4 right-8 w-20 h-20 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/25"
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 1.2 }}
               >
-                <Zap size={24} className="text-white" />
+                <div className="w-4 h-4 bg-white rounded-full animate-pulse"></div>
               </motion.div>
 
-              {/* Data Nodes */}
               <motion.div
-                className="absolute top-1/2 right-8 transform -translate-y-1/2 w-16 h-16 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/25"
+                className="absolute bottom-1/4 left-4 w-24 h-24 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/25"
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 1.4 }}
               >
-                <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                <div className="w-5 h-5 bg-white rounded-full animate-pulse"></div>
               </motion.div>
 
               <motion.div
-                className="absolute bottom-16 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/25"
+                className="absolute top-1/2 right-4 w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/25"
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 1.6 }}
@@ -231,7 +240,7 @@ const Hero = () => {
               >
                 <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
               </motion.div>
-            </motion.div>
+            </div>
 
             {/* Floating Particles */}
             {[...Array(8)].map((_, i) => (
