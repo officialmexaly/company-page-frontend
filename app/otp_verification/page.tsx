@@ -1,38 +1,33 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import Link from 'next/link'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Loader2, CheckCircle, RefreshCw, Shield, Clock } from 'lucide-react'
+import Link from 'next/link'
+import { ArrowLeft, Shield, Clock, Loader2, CheckCircle, RefreshCw } from 'lucide-react'
 
 export default function OTPVerificationPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [isLoading, setIsLoading] = useState(false)
   const [isVerified, setIsVerified] = useState(false)
   const [timeLeft, setTimeLeft] = useState(300) // 5 minutes in seconds
-  const [canResend, setCanResend] = useState(false)
-  const [isResending, setIsResending] = useState(false)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
-  // Timer effect
   useEffect(() => {
-    if (timeLeft > 0) {
+    // Focus first input on mount
+    inputRefs.current[0]?.focus()
+  }, [])
+
+  useEffect(() => {
+    // Timer countdown
+    if (timeLeft > 0 && !isVerified) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
       return () => clearTimeout(timer)
-    } else {
-      setCanResend(true)
     }
-  }, [timeLeft])
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
+  }, [timeLeft, isVerified])
 
   const handleChange = (index: number, value: string) => {
-    if (value.length > 1) return
-
+    if (value.length > 1) return // Prevent multiple characters
+    
     const newOtp = [...otp]
     newOtp[index] = value
     setOtp(newOtp)
@@ -44,6 +39,7 @@ export default function OTPVerificationPage() {
   }
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
+    // Handle backspace
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus()
     }
@@ -52,40 +48,48 @@ export default function OTPVerificationPage() {
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault()
     const pastedData = e.clipboardData.getData('text').slice(0, 6)
-    if (!/^\d+$/.test(pastedData)) return
-
-    const newOtp = [...otp]
-    for (let i = 0; i < pastedData.length && i < 6; i++) {
-      newOtp[i] = pastedData[i]
+    const newOtp = pastedData.split('').slice(0, 6)
+    
+    while (newOtp.length < 6) {
+      newOtp.push('')
     }
+    
     setOtp(newOtp)
+    
+    // Focus last filled input or first empty
+    const lastIndex = Math.min(pastedData.length, 5)
+    inputRefs.current[lastIndex]?.focus()
+  }
 
-    // Focus the next empty input or the last input
-    const nextIndex = Math.min(pastedData.length, 5)
-    inputRefs.current[nextIndex]?.focus()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    // Simulate verification API call
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+    setIsLoading(false)
+    setIsVerified(true)
+  }
+
+  const handleResendCode = async () => {
+    setIsLoading(true)
+    setTimeLeft(300) // Reset timer
+    setOtp(['', '', '', '', '', '']) // Clear OTP
+    
+    // Simulate resend API call
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
+    setIsLoading(false)
+    inputRefs.current[0]?.focus()
   }
 
   const isOtpComplete = otp.every(digit => digit !== '')
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!isOtpComplete) return
-
-    setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    setIsVerified(true)
-    setIsLoading(false)
-  }
-
-  const handleResendOTP = async () => {
-    setIsResending(true)
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    setTimeLeft(300)
-    setCanResend(false)
-    setIsResending(false)
-    setOtp(['', '', '', '', '', ''])
-    inputRefs.current[0]?.focus()
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
   return (
@@ -187,10 +191,7 @@ export default function OTPVerificationPage() {
                         Verifying...
                       </>
                     ) : (
-                      <>
-                        <CheckCircle size={16} />
-                        Verify Code
-                      </>
+                      'Verify Code'
                     )}
                   </button>
                 </motion.div>
@@ -199,31 +200,16 @@ export default function OTPVerificationPage() {
               {/* Resend Code */}
               <div className="text-center mt-6">
                 <p className="text-white/60 text-sm mb-3">
-                  Didn't receive the code?
+                  Didn&apos;t receive the code?
                 </p>
-                {canResend || timeLeft === 0 ? (
-                  <button
-                    onClick={handleResendOTP}
-                    disabled={isResending}
-                    className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors duration-300 text-sm disabled:opacity-50 inline-flex items-center gap-1"
-                  >
-                    {isResending ? (
-                      <>
-                        <Loader2 size={14} className="animate-spin" />
-                        Resending...
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw size={14} />
-                        Resend Code
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <span className="text-white/40 text-sm">
-                    Resend available in {formatTime(timeLeft)}
-                  </span>
-                )}
+                <button
+                  onClick={handleResendCode}
+                  disabled={isLoading || timeLeft > 240} // Allow resend after 1 minute
+                  className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors duration-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mx-auto"
+                >
+                  <RefreshCw size={14} className={isLoading ? "animate-spin" : ""} />
+                  {timeLeft > 240 ? `Resend in ${formatTime(300 - timeLeft)}` : 'Resend Code'}
+                </button>
               </div>
             </>
           ) : (
@@ -242,7 +228,7 @@ export default function OTPVerificationPage() {
                   Mexaly
                 </Link>
                 <h1 className="text-xl font-bold text-white mb-1">
-                  Verification Successful!
+                  Account Verified!
                 </h1>
                 <p className="text-white/60 text-sm">
                   Your account has been verified successfully

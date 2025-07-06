@@ -73,8 +73,8 @@ const Contact = () => {
                 Get Started Today
               </h2>
               <p className="text-xl text-white/80 leading-relaxed">
-                Ready to transform your business operations? Let's discuss how
-                Mexaly can help you achieve operational excellence with AI-native
+                Ready to transform your business operations? We&apos;d love to hear from you. 
+                Let&apos;s discuss how Mexaly can help you achieve operational excellence with AI-native
                 solutions.
               </p>
             </div>

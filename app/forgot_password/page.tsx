@@ -1,30 +1,29 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Mail, ArrowLeft, Loader2, Send, CheckCircle } from 'lucide-react'
+import Link from 'next/link'
+import { Mail, ArrowLeft, Send, Loader2, CheckCircle } from 'lucide-react'
 
 export default function ForgotPasswordPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [isEmailSent, setIsEmailSent] = useState(false)
   const [email, setEmail] = useState('')
-
-  const isFormValid = email.length > 0 && email.includes('@')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!isFormValid) return
-
     setIsLoading(true)
+
+    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000))
-    setIsEmailSent(true)
+
     setIsLoading(false)
+    setIsSubmitted(true)
   }
 
   const handleResendEmail = async () => {
     setIsLoading(true)
+    // Simulate resend API call
     await new Promise(resolve => setTimeout(resolve, 1500))
     setIsLoading(false)
   }
@@ -47,7 +46,7 @@ export default function ForgotPasswordPage() {
         transition={{ duration: 0.6 }}
         className="w-full max-w-md relative z-10"
       >
-        {/* Back to Login */}
+        {/* Back Navigation */}
         <Link
           href="/login"
           className="inline-flex items-center gap-2 text-white/70 hover:text-white mb-6 transition-colors duration-300 text-sm"
@@ -56,9 +55,9 @@ export default function ForgotPasswordPage() {
           Back to Login
         </Link>
 
-        {/* Forgot Password Card */}
+        {/* Reset Password Card */}
         <div className="glass-card p-6">
-          {!isEmailSent ? (
+          {!isSubmitted ? (
             <>
               {/* Header */}
               <div className="text-center mb-8">
@@ -66,14 +65,14 @@ export default function ForgotPasswordPage() {
                   Mexaly
                 </Link>
                 <h1 className="text-xl font-bold text-white mb-1">
-                  Forgot Password?
+                  Reset Password
                 </h1>
                 <p className="text-white/60 text-sm">
-                  Enter your email address and we'll send you a link to reset your password
+                  Enter your email to receive a reset link
                 </p>
               </div>
 
-              {/* Form */}
+              {/* Reset Form */}
               <form onSubmit={handleSubmit} className="space-y-6">
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
@@ -81,23 +80,23 @@ export default function ForgotPasswordPage() {
                   transition={{ duration: 0.3 }}
                   className="space-y-4"
                 >
-                  {/* Email */}
+                  {/* Email Input */}
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50" size={18} />
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email address"
+                      placeholder="Enter your email"
                       required
                       className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-indigo-500 focus:bg-white/15 transition-all duration-300 text-sm"
                     />
                   </div>
 
-                  {/* Send Reset Link Button */}
+                  {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={isLoading || !isFormValid}
+                    disabled={isLoading}
                     className="w-full btn-primary justify-center disabled:opacity-50 disabled:cursor-not-allowed py-2.5 text-sm"
                   >
                     {isLoading ? (
@@ -134,7 +133,7 @@ export default function ForgotPasswordPage() {
                   Check Your Email
                 </h1>
                 <p className="text-white/60 text-sm">
-                  We've sent a password reset link to
+                  We&apos;ve sent a password reset link to
                 </p>
                 <p className="text-indigo-400 font-medium text-sm mt-1">
                   {email}
@@ -155,7 +154,7 @@ export default function ForgotPasswordPage() {
               {/* Resend Link */}
               <div className="text-center">
                 <p className="text-white/60 text-sm mb-3">
-                  Didn't receive the email?
+                  Didn&apos;t receive the email?
                 </p>
                 <button
                   onClick={handleResendEmail}

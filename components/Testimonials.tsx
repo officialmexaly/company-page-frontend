@@ -80,7 +80,7 @@ const Testimonials = () => {
             >
               {/* Quote Mark */}
               <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-2xl font-bold">"</span>
+                <span className="text-white text-2xl font-bold">&quot;</span>
               </div>
 
               {/* Quote */}
