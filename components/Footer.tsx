@@ -41,8 +41,8 @@ const Footer = () => {
   const socialLinks = [
     { icon: Linkedin, href: 'https://linkedin.com/company/mexaly', label: 'LinkedIn' },
     { icon: Twitter, href: 'https://twitter.com/mexaly', label: 'Twitter' },
-    { icon: Github, href: 'https://github.com/mexaly', label: 'GitHub' },
-    { icon: Youtube, href: 'https://youtube.com/mexaly', label: 'YouTube' },
+    { icon: Github, href: 'https://github.com/officialmexaly', label: 'GitHub' },
+    { icon: Youtube, href: 'https://studio.youtube.com/channel/UCOl8BqlmFNopTiSMsNvr-WQ', label: 'YouTube' },
   ]
 
   return (

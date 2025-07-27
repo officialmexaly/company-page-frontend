@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { motion, useScroll, useTransform, Variants } from 'framer-motion'
-import { Rocket, Play, Brain, Zap, ArrowRight, Globe, Target } from 'lucide-react'
+import { Rocket, Play, Brain, Zap, ArrowRight, Globe, Target, X } from 'lucide-react'
 
 // Type definitions
 interface MousePosition {
@@ -251,8 +251,56 @@ const VectorIllustration: React.FC = () => {
   )
 }
 
+interface VideoModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        className="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors duration-200"
+        >
+          <X size={20} />
+        </button>
+        
+        {/* YouTube Embed */}
+        <iframe
+          width="100%"
+          height="100%"
+          src="https://www.youtube.com/embed/26Lt9Bzixk8?autoplay=1&rel=0&modestbranding=1"
+          title="Mexaly Demo Video"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          className="w-full h-full"
+        />
+      </motion.div>
+    </motion.div>
+  );
+};
+
 const Hero: React.FC = () => {
   const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 })
+  const [isVideoOpen, setIsVideoOpen] = useState(false)
   const { scrollYProgress } = useScroll()
   const y = useTransform(scrollYProgress, [0, 1], [0, -50])
   const opacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
@@ -264,6 +312,19 @@ const Hero: React.FC = () => {
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
+
+  // Prevent body scroll when video is open
+  useEffect(() => {
+    if (isVideoOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isVideoOpen])
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -289,131 +350,138 @@ const Hero: React.FC = () => {
   }
 
   return (
-    <section className="relative min-h-screen overflow-hidden flex items-center pt-40 ">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
-        {/* Animated Grid */}
-        <motion.div 
-          className="absolute inset-0 opacity-5"
-          style={{ y }}
-        >
-          <div 
-            className="w-full h-full"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cpattern id='grid' width='15' height='15' patternUnits='userSpaceOnUse'%3E%3Cpath d='M 15 0 L 0 0 0 15' fill='none' stroke='white' stroke-width='0.5'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23grid)'/%3E%3C/svg%3E")`,
-            }}
-          />
-        </motion.div>
-
-        {/* Gradient Orbs */}
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-72 h-72 lg:w-96 lg:h-96 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl"
-          animate={{
-            x: mousePosition.x * 0.005,
-            y: mousePosition.y * 0.005,
-          }}
-          transition={{ type: "spring", stiffness: 20, damping: 30 }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-64 h-64 lg:w-80 lg:h-80 bg-gradient-to-r from-pink-500/8 to-cyan-500/8 rounded-full blur-3xl"
-          animate={{
-            x: mousePosition.x * -0.003,
-            y: mousePosition.y * -0.003,
-          }}
-          transition={{ type: "spring", stiffness: 15, damping: 35 }}
-        />
-      </div>
-
-      {/* Main Content */}
-      <motion.div 
-        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
-        style={{ opacity }}
-      >
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 xl:gap-20 items-center py-12 lg:py-20">
-          {/* Left Column - Content */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="text-center lg:text-left order-2 lg:order-1"
+    <>
+      <section className="relative min-h-screen overflow-hidden flex items-center pt-40 ">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
+          {/* Animated Grid */}
+          <motion.div 
+            className="absolute inset-0 opacity-5"
+            style={{ y }}
           >
-            {/* Main Heading */}
-            <motion.h1
-              variants={itemVariants}
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight mb-6"
+            <div 
+              className="w-full h-full"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cpattern id='grid' width='15' height='15' patternUnits='userSpaceOnUse'%3E%3Cpath d='M 15 0 L 0 0 0 15' fill='none' stroke='white' stroke-width='0.5'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23grid)'/%3E%3C/svg%3E")`,
+              }}
+            />
+          </motion.div>
+
+          {/* Gradient Orbs */}
+          <motion.div
+            className="absolute top-1/4 left-1/4 w-72 h-72 lg:w-96 lg:h-96 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl"
+            animate={{
+              x: mousePosition.x * 0.005,
+              y: mousePosition.y * 0.005,
+            }}
+            transition={{ type: "spring", stiffness: 20, damping: 30 }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 right-1/4 w-64 h-64 lg:w-80 lg:h-80 bg-gradient-to-r from-pink-500/8 to-cyan-500/8 rounded-full blur-3xl"
+            animate={{
+              x: mousePosition.x * -0.003,
+              y: mousePosition.y * -0.003,
+            }}
+            transition={{ type: "spring", stiffness: 15, damping: 35 }}
+          />
+        </div>
+
+        {/* Main Content */}
+        <motion.div 
+          className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+          style={{ opacity }}
+        >
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 xl:gap-20 items-center py-12 lg:py-20">
+            {/* Left Column - Content */}
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="text-center lg:text-left order-2 lg:order-1"
             >
-              <span className="block">Welcome to</span>
-              <span className="block bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent pb-2">
-                Mexaly
-              </span>
-            </motion.h1>
-
-            {/* Subheading */}
-            <motion.p
-              variants={itemVariants}
-              className="text-lg sm:text-xl text-white/80 mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
-            >
-              Experience the future of innovation with our cutting-edge solutions that empower businesses to reach new heights and transform their digital presence.
-            </motion.p>
-
-            {/* CTA Section */}
-            <motion.div variants={itemVariants} className="space-y-6">
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group relative px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/20 inline-flex items-center justify-center gap-3 overflow-hidden"
-                >
-                  <span className="relative z-10 flex items-center gap-3">
-                    <Rocket size={18} />
-                    Begin Your Journey
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-200" />
-                  </span>
-                </motion.button>
-                
-                <motion.button 
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group px-6 py-3 lg:px-8 lg:py-4 bg-white/8 backdrop-blur-md border border-white/20 text-white font-semibold rounded-xl transition-all duration-200 hover:bg-white/12 inline-flex items-center justify-center gap-3"
-                >
-                  <Play size={18} className="group-hover:scale-105 transition-transform duration-200" />
-                  Experience Demo
-                </motion.button>
-              </div>
-
-              {/* Trust Indicators */}
-              <motion.div 
+              {/* Main Heading */}
+              <motion.h1
                 variants={itemVariants}
-                className="flex items-center justify-center lg:justify-start gap-8 pt-8 border-t border-white/10"
+                className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight mb-6"
               >
-                <div className="text-center">
-                  <div className="text-xl lg:text-2xl font-bold text-white">500+</div>
-                  <div className="text-xs lg:text-sm text-white/60">Happy Clients</div>
+                <span className="block">Welcome to</span>
+                <span className="block bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent pb-2">
+                  Mexaly
+                </span>
+              </motion.h1>
+
+              {/* Subheading */}
+              <motion.p
+                variants={itemVariants}
+                className="text-lg sm:text-xl text-white/80 mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+              >
+                Experience the future of innovation with our cutting-edge solutions that empower businesses to reach new heights and transform their digital presence.
+              </motion.p>
+
+              {/* CTA Section */}
+              <motion.div variants={itemVariants} className="space-y-6">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  <motion.a
+                    href="/login"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="group relative px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/20 inline-flex items-center justify-center gap-3 overflow-hidden cursor-pointer"
+                  >
+                    <span className="relative z-10 flex items-center gap-3">
+                      <Rocket size={18} />
+                      Begin Your Journey
+                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-200" />
+                    </span>
+                  </motion.a>
+                  
+                  <motion.button
+                    onClick={() => setIsVideoOpen(true)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="group px-6 py-3 lg:px-8 lg:py-4 bg-white/8 backdrop-blur-md border border-white/20 text-white font-semibold rounded-xl transition-all duration-200 hover:bg-white/12 inline-flex items-center justify-center gap-3 cursor-pointer"
+                  >
+                    <Play size={18} className="group-hover:scale-105 transition-transform duration-200" />
+                    Experience Demo
+                  </motion.button>
                 </div>
-                <div className="text-center">
-                  <div className="text-xl lg:text-2xl font-bold text-white">99.9%</div>
-                  <div className="text-xs lg:text-sm text-white/60">Uptime</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl lg:text-2xl font-bold text-white">24/7</div>
-                  <div className="text-xs lg:text-sm text-white/60">Support</div>
-                </div>
+
+                {/* Trust Indicators */}
+                <motion.div 
+                  variants={itemVariants}
+                  className="flex items-center justify-center lg:justify-start gap-8 pt-8 border-t border-white/10"
+                >
+                  <div className="text-center">
+                    <div className="text-xl lg:text-2xl font-bold text-white">500+</div>
+                    <div className="text-xs lg:text-sm text-white/60">Happy Clients</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl lg:text-2xl font-bold text-white">99.9%</div>
+                    <div className="text-xs lg:text-sm text-white/60">Uptime</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl lg:text-2xl font-bold text-white">24/7</div>
+                    <div className="text-xs lg:text-sm text-white/60">Support</div>
+                  </div>
+                </motion.div>
               </motion.div>
             </motion.div>
-          </motion.div>
 
-          {/* Right Column - Vector Illustration */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="relative flex items-center justify-center order-1 lg:order-2"
-          >
-            <VectorIllustration />
-          </motion.div>
-        </div>
-      </motion.div>
-    </section>
+            {/* Right Column - Vector Illustration */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="relative flex items-center justify-center order-1 lg:order-2"
+            >
+              <VectorIllustration />
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Video Modal */}
+      <VideoModal isOpen={isVideoOpen} onClose={() => setIsVideoOpen(false)} />
+    </>
   )
 }
 
