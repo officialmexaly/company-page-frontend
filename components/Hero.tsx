@@ -1,10 +1,16 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'framer-motion'
+import React, { useEffect, useState } from 'react'
+import { motion, useScroll, useTransform, Variants } from 'framer-motion'
 import { Rocket, Play, Brain, Zap, ArrowRight, Globe, Target } from 'lucide-react'
-import { useEffect, useState } from 'react'
 
-const VectorIllustration = () => {
+// Type definitions
+interface MousePosition {
+  x: number;
+  y: number;
+}
+
+const VectorIllustration: React.FC = () => {
   return (
     <div className="relative w-full h-full min-h-[400px] lg:min-h-[500px]">
       {/* Main Vector Illustration */}
@@ -125,7 +131,7 @@ const VectorIllustration = () => {
         </motion.g>
 
         {/* Floating Particles */}
-        {[...Array(12)].map((_, i) => (
+        {Array.from({ length: 12 }, (_, i) => (
           <motion.circle
             key={i}
             cx={100 + (i * 40)}
@@ -153,7 +159,7 @@ const VectorIllustration = () => {
           animate={{ scale: 1, opacity: 0.4 }}
           transition={{ duration: 1.5, delay: 1.5 }}
         >
-          {[1, 2, 3].map((ring) => (
+          {[1, 2, 3].map((ring: number) => (
             <motion.circle
               key={ring}
               cx="300"
@@ -245,21 +251,21 @@ const VectorIllustration = () => {
   )
 }
 
-const Hero = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+const Hero: React.FC = () => {
+  const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 })
   const { scrollYProgress } = useScroll()
   const y = useTransform(scrollYProgress, [0, 1], [0, -50])
   const opacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent): void => {
       setMousePosition({ x: e.clientX, y: e.clientY })
     }
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -270,7 +276,7 @@ const Hero = () => {
     },
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
